@@ -1,37 +1,47 @@
 ﻿struct Coord
 {
-	public int X;
-	public int Y;
+	private int _x;
+	private int _y;
 
     public Coord()
     {
-        X = 0;
-		Y = 0;
+        _x = 0;
+		_y = 0;
     }
 
     public Coord(int x, int y)
 	{
-		X = x;
-		Y = y;
+		_x = x;
+		_y = y;
 	}
 
 	public void MoveUp()
 	{
-		Y--;
+		_y--;
 	}
 
 	public void MoveDown()
 	{
-		Y++;
+		_y++;
 	}
 
 	public void MoveLeft()
 	{
-		X--;
+		_x--;
 	}
 
 	public void MoveRight()
 	{
-		X++;
+		_x++;
+	}
+
+	public int GetX()
+	{
+		return _x;
+	}
+
+	public int GetY()
+	{
+		return _y;
 	}
 }

@@ -1,66 +1,67 @@
 ﻿struct GameLogic
 {
-	public Player[] Players;
-	public ConsoleColor WallColor;
-	public char[,] Maze;
+	private Player[] _players;
+	private ConsoleColor _wallColor;
+	private char[,] _maze;
 
 	public GameLogic(Player[] players, ConsoleColor wallColor, string maze)
 	{
-		Players = players;
-		WallColor = wallColor;
+		_players = players;
+		_wallColor = wallColor;
 		string[] lines = maze.Split('\n');
 
-		Maze = new char[lines.Length, lines[0].Length];
+		_maze = new char[lines.Length, lines[0].Length];
 		for (int y = 0; y < lines.Length; y++)
 			for (int x = 0; x < lines[y].Length; x++)
-				Maze[y, x] = lines[y][x];
+				_maze[y, x] = lines[y][x];
 
-		for (int i = 0; i < Players.Length; i++)
-			Players[i].Current = GetRandomPosition();
+		for (int i = 0; i < _players.Length; i++)
+			_players[i].Current = GetRandomPosition();
 
+		Console.CursorVisible = false;
 		DrawInit();
 	}
 
-	public void DrawInit()
+	private void DrawInit()
 	{
 		Console.Clear();
-		for (int y = 0; y < Maze.GetLength(0); y++)
+		for (int y = 0; y < _maze.GetLength(0); y++)
 		{
-			for (int x = 0; x < Maze.GetLength(1); x++)
+			for (int x = 0; x < _maze.GetLength(1); x++)
 			{
-				if (Maze[y, x] == '#')
-					Console.ForegroundColor = WallColor;
+				if (_maze[y, x] == '#')
+					Console.ForegroundColor = _wallColor;
 				else
 					Console.ResetColor();
 
 				bool playerHere = false;
-				for (int i = 0; i < Players.Length; i++)
+				for (int i = 0; i < _players.Length; i++)
 				{
-					if (Players[i].Current.X == x && Players[i].Current.Y == y)
+					if (_players[i].Current.GetX() == x && _players[i].Current.GetY() == y)
 					{
-						Console.ForegroundColor = Players[i].Color;
-						Console.Write(Players[i].Symbol);
+						Console.ForegroundColor = _players[i].Color;
+						Console.Write(_players[i].Symbol);
 						playerHere = true;
 						break;
 					}
 				}
 
 				if (!playerHere)
-					Console.Write(Maze[y, x]);
+					Console.Write(_maze[y, x]);
 			}
 			Console.WriteLine();
 		}
 		Console.ResetColor();
 	}
 
-	public Coord GetRandomPosition()
+	private Coord GetRandomPosition()
 	{
 		Random rand = new();
 		Coord pos;
 		do
 		{
-			pos = new Coord(rand.Next(0, Maze.GetLength(1)), rand.Next(0, Maze.GetLength(0)));
-		} while (Maze[pos.Y, pos.X] != ' ');
+			pos = new Coord(rand.Next(0, _maze.GetLength(1)), rand.Next(0, _maze.GetLength(0)));
+		} while (_maze[pos.GetY(), pos.GetX()] != ' ');
 
 		return pos;
 	}
@@ -74,47 +75,47 @@
 			if (key.Key == ConsoleKey.Escape)
 				break;
 
-			for (int i = 0; i < Players.Length; i++)
+			for (int i = 0; i < _players.Length; i++)
 			{
-				Players[i].Last = Players[i].Current;
-				Coord pos = Players[i].Current;
-				if (Players[i].Keys.Up == key.Key)
+				_players[i].Last = _players[i].Current;
+				Coord pos = _players[i].Current;
+				if (_players[i].Keys.Up == key.Key)
 				{
 					pos.MoveUp();
 					if (IsValidPosition(pos))
 					{
-						Players[i].Current = pos;
-						RedrawPlayer(Players[i]);
+						_players[i].Current = pos;
+						RedrawPlayer(_players[i]);
 						continue;
 					}
 				}
-				else if (Players[i].Keys.Down == key.Key)
+				else if (_players[i].Keys.Down == key.Key)
 				{
 					pos.MoveDown();
 					if (IsValidPosition(pos))
 					{
-						Players[i].Current = pos;
-						RedrawPlayer(Players[i]);
+						_players[i].Current = pos;
+						RedrawPlayer(_players[i]);
 						continue;
 					}
 				}
-				else if (Players[i].Keys.Left == key.Key)
+				else if (_players[i].Keys.Left == key.Key)
 				{
 					pos.MoveLeft();
 					if (IsValidPosition(pos))
 					{
-						Players[i].Current = pos;
-						RedrawPlayer(Players[i]);
+						_players[i].Current = pos;
+						RedrawPlayer(_players[i]);
 						continue;
 					}
 				}
-				else if (Players[i].Keys.Right == key.Key)
+				else if (_players[i].Keys.Right == key.Key)
 				{
 					pos.MoveRight();
 					if (IsValidPosition(pos))
 					{
-						Players[i].Current = pos;
-						RedrawPlayer(Players[i]);
+						_players[i].Current = pos;
+						RedrawPlayer(_players[i]);
 						continue;
 					}
 				}
@@ -122,19 +123,19 @@
 		}
 	}
 
-	public bool IsValidPosition(Coord pos)
+	private bool IsValidPosition(Coord pos)
 	{
-		if (pos.X < 0 || pos.X >= Maze.GetLength(1) || pos.Y < 0 || pos.Y >= Maze.GetLength(0))
+		if (pos.GetX() < 0 || pos.GetX() >= _maze.GetLength(1) || pos.GetY() < 0 || pos.GetY() >= _maze.GetLength(0))
 			return false;
 
-		return Maze[pos.Y, pos.X] == ' ';
+		return _maze[pos.GetY(), pos.GetX()] == ' ';
 	}
 
-	public void RedrawPlayer(Player player)
+	private void RedrawPlayer(Player player)
 	{
-		Console.SetCursorPosition(player.Last.X, player.Last.Y);
+		Console.SetCursorPosition(player.Last.GetX(), player.Last.GetY());
 		Console.Write(' ');
-		Console.SetCursorPosition(player.Current.X, player.Current.Y);
+		Console.SetCursorPosition(player.Current.GetX(), player.Current.GetY());
 		Console.ForegroundColor = player.Color;
 		Console.Write(player.Symbol);
 		Console.ResetColor();
